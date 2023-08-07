@@ -1,4 +1,6 @@
-﻿namespace Dotmim.Sample
+﻿using System.Diagnostics;
+
+namespace Dotmim.Sample
 {
     public class Program
     {
@@ -7,6 +9,7 @@
         private static readonly string _firstClientDatabaseName = "Client1DB";
         private static readonly string _secondClientDatabaseName = "Client2DB";
         private static readonly string _syncClientDatabaseName = "TestSyncDB";
+        private static readonly string _scopeName = "defaultScope";
 
         private static async Task Main(string[] args)
         {
@@ -19,30 +22,14 @@
                 HelperMethods.CreateDatabases(_connectionString, _firstClientDatabaseName, _secondClientDatabaseName, _syncClientDatabaseName);
 
                 // Sync Database for the first time
-                await HelperMethods.SyncDatabaseAsync(firstClientConnectionString, _syncServerUrl, Console.WriteLine);
-                await HelperMethods.SyncDatabaseAsync(secondClientConnectionString, _syncServerUrl, Console.WriteLine);
+                await HelperMethods.SyncDatabaseAsync(firstClientConnectionString, _syncServerUrl, _scopeName, (result) => Debug.WriteLine(result));
+                await HelperMethods.SyncDatabaseAsync(secondClientConnectionString, _syncServerUrl, _scopeName, (result) => Debug.WriteLine(result));
 
-                // Add purchase for first client
-                HelperMethods.AddPurchase(
-                    firstClientConnectionString,
-                    1,
-                    1,
-                    1,
-                    1,
-                    200.50m,
-                    "test from client1",
-                    true);
+                // Add purchase for both client with the same purchase primary key
+                HelperMethods.AddPurchaseForBothClientsWIthTheSamePurchasPrimaryKey(firstClientConnectionString, secondClientConnectionString);
 
-                // Add purchase for second client
-                HelperMethods.AddPurchase(
-                    secondClientConnectionString,
-                    1,
-                    1,
-                    1,
-                    1,
-                    700.50m,
-                    "test from client2",
-                    true);
+                // Make sync for both clients again
+                await HelperMethods.SyncBothClientsAgain(firstClientConnectionString, secondClientConnectionString, _syncServerUrl, _scopeName);
             }
             finally
             {

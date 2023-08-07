@@ -1,5 +1,6 @@
 ﻿using Dotmim.Sample.Properties;
 using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 
 namespace Dotmim.Sample
 {
@@ -17,6 +18,59 @@ namespace Dotmim.Sample
             DeleteDatabase(_connectionString, _firstClientDatabaseName);
             DeleteDatabase(_connectionString, _secondClientDatabaseName);
             DeleteDatabase(_connectionString, _syncClientDatabaseName);
+        }
+
+        public static void AddPurchaseForBothClientsWIthTheSamePurchasPrimaryKey(string firstClientConnectionString, string secondClientConnectionString)
+        {
+            // Add purchase for first client
+            AddPurchase(firstClientConnectionString,
+                        1,
+                        1,
+                        1,
+                        1,
+                        200.50m,
+                        "test from client1",
+                        true);
+
+            // Add purchase for second client
+            AddPurchase(secondClientConnectionString,
+                        1,
+                        1,
+                        1,
+                        1,
+                        700.50m,
+                        "test from client2",
+                        true);
+        }
+
+        public static async Task SyncDatabaseAsync(string clientConnectionString, string serverAddress, string scopeName, Action<object> action)
+        {
+            using var httpClient = new HttpClient();
+            await SyncHelper.SyncDatabaseFirstTimeAsync(httpClient, scopeName, clientConnectionString, serverAddress, action);
+
+            await SyncHelper.SyncDatabase(httpClient, scopeName, clientConnectionString, serverAddress, action);
+        }
+
+        public static async Task SyncBothClientsAgain(
+            string firstClientConnectionString,
+            string secondClientConnectionString,
+            string syncServerUrl,
+            string scopeName)
+        {
+            var httpClient = new HttpClient();
+            await SyncHelper.SyncDatabase(
+                httpClient,
+                scopeName,
+                firstClientConnectionString,
+                syncServerUrl,
+                (result) => Debug.WriteLine(result));
+
+            await SyncHelper.SyncDatabase(
+                httpClient,
+                scopeName,
+                secondClientConnectionString,
+                syncServerUrl,
+                (result) => Debug.WriteLine(result));
         }
 
         private static void ExcuteCreateDatabase(string databaseConnectionString, string databaseName)
@@ -67,15 +121,7 @@ namespace Dotmim.Sample
             }
         }
 
-        public static async Task SyncDatabaseAsync(string clientConnectionString, string serverAddress, Action<Object> action)
-        {
-            using var httpClient = new HttpClient();
-            await SyncHelper.SyncDatabaseFirstTimeAsync(httpClient, "defaultScope", clientConnectionString, serverAddress, action);
-
-            await SyncHelper.SyncDatabase(httpClient, "defaultScope", clientConnectionString, serverAddress, action);
-        }
-
-        public static void AddPurchase(
+        private static void AddPurchase(
             string connectionString,
             int fkVendorId,
             int fkPaymentTypeId,
