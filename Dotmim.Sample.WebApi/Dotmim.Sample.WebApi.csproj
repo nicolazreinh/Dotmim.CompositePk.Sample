@@ -7,7 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dotmim.Sync.Core" Version="0.9.8" />
+    <PackageReference Include="Dotmim.Sync.SqlServer" Version="0.9.8" />
+    <PackageReference Include="Dotmim.Sync.SqlServer.ChangeTracking" Version="0.9.8" />
+    <PackageReference Include="Dotmim.Sync.Web.Client" Version="0.9.8" />
+    <PackageReference Include="Dotmim.Sync.Web.Server" Version="0.9.8" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

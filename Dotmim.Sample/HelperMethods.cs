@@ -1,17 +1,54 @@
 ﻿using Dotmim.Sample.Properties;
 using Microsoft.Data.SqlClient;
-using System;
 
 namespace Dotmim.Sample
 {
     public class HelperMethods
     {
-        public static void ExcuteCreateDatabase(string databaseConnectionString, string databaseName)
+        public static void CreateDatabases(string _connectionString, string _firstClientDatabaseName, string _secondClientDatabaseName, string _syncClientDatabaseName)
+        {
+            ExcuteCreateDatabase(_connectionString, _firstClientDatabaseName);
+            ExcuteCreateDatabase(_connectionString, _secondClientDatabaseName);
+            CreateSyncDatabase(_connectionString, _syncClientDatabaseName);
+        }
+
+        public static void CleanUp(string _connectionString, string _firstClientDatabaseName, string _secondClientDatabaseName, string _syncClientDatabaseName)
+        {
+            DeleteDatabase(_connectionString, _firstClientDatabaseName);
+            DeleteDatabase(_connectionString, _secondClientDatabaseName);
+            DeleteDatabase(_connectionString, _syncClientDatabaseName);
+        }
+
+        private static void ExcuteCreateDatabase(string databaseConnectionString, string databaseName)
         {
             using var connection = new SqlConnection(databaseConnectionString);
             connection.Open();
 
             var databaseQuery = Resources.schema.Replace("@DatabaseName", databaseName);
+
+            try
+            {
+                var parts = databaseQuery.Split(new[] { "**GO**" }, StringSplitOptions.None);
+
+                foreach (var part in parts)
+                {
+                    using var command = new SqlCommand(part, connection);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!ex.Message.Contains("There is already an object named"))
+                    throw;
+            }
+        }
+
+        private static void CreateSyncDatabase(string connectionString, string _syncClientDatabaseName)
+        {
+            using var connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            var databaseQuery = Resources.schemaforsyncdb.Replace("@DatabaseName", _syncClientDatabaseName);
 
             try
             {
@@ -90,7 +127,7 @@ namespace Dotmim.Sample
             }
         }
 
-        public static void DeleteDatabase(string connectionString, string databaseName)
+        private static void DeleteDatabase(string connectionString, string databaseName)
         {
             using var connection = new SqlConnection(connectionString);
             connection.Open();

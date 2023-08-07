@@ -79,13 +79,13 @@ namespace Dotmim.Sample.Properties {
         /// <summary>
         ///   Looks up a localized string similar to USE [master]
         ///
-        ///CREATE DATABASE TestDb
+        ///CREATE DATABASE @DatabaseName
         ///
         ///**GO**
         ///
-        ///USE [TestDb]
+        ///USE [@DatabaseName]
         ///
-        ///ALTER DATABASE TestDb SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 14 DAYS, AUTO_CLEANUP = ON)
+        ///ALTER DATABASE @DatabaseName SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 14 DAYS, AUTO_CLEANUP = ON)
         ///
         ///**GO**
         ///
@@ -97,11 +97,40 @@ namespace Dotmim.Sample.Properties {
         ///	[purchase_datetime] [datetime] NOT NULL,
         ///	[fk_currency_id] [int] NOT NULL,
         ///	[purchase_amount] [decimal](8, 2) NOT NULL,
-        ///	[description] [nvarc [rest of string was truncated]&quot;;.
+        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string schema {
             get {
                 return ResourceManager.GetString("schema", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USE [master]
+        ///
+        ///CREATE DATABASE @DatabaseName
+        ///
+        ///**GO**
+        ///
+        ///USE [@DatabaseName]
+        ///
+        ///ALTER DATABASE @DatabaseName SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 14 DAYS, AUTO_CLEANUP = ON)
+        ///
+        ///**GO**
+        ///
+        ///CREATE TABLE [dbo].[tbl_purchases](
+        ///	[pk_purchase_id] [bigint] IDENTITY(1,1) NOT NULL,
+        ///	[fk_vendor_id] [int] NULL,
+        ///	[fk_payment_type_id] [int] NOT NULL,
+        ///	[fk_item_id] [bigint] NOT NULL,
+        ///	[purchase_datetime] [datetime] NOT NULL,
+        ///	[fk_currency_id] [int] NOT NULL,
+        ///	[purchase_amount] [decimal](8, 2) NOT NULL,
+        /// [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string schemaforsyncdb {
+            get {
+                return ResourceManager.GetString("schemaforsyncdb", resourceCulture);
             }
         }
     }

@@ -6,6 +6,7 @@
         private static readonly string _syncServerUrl = "https://localhost:5001/api/sync";
         private static readonly string _firstClientDatabaseName = "Client1DB";
         private static readonly string _secondClientDatabaseName = "Client2DB";
+        private static readonly string _syncClientDatabaseName = "TestSyncDB";
 
         private static async Task Main(string[] args)
         {
@@ -15,8 +16,7 @@
                 var secondClientConnectionString = _connectionString.Replace("master", _secondClientDatabaseName);
 
                 // Create two database with purcahse
-                HelperMethods.ExcuteCreateDatabase(_connectionString, _firstClientDatabaseName);
-                HelperMethods.ExcuteCreateDatabase(_connectionString, _secondClientDatabaseName);
+                HelperMethods.CreateDatabases(_connectionString, _firstClientDatabaseName, _secondClientDatabaseName, _syncClientDatabaseName);
 
                 // Sync Database for the first time
                 await HelperMethods.SyncDatabaseAsync(firstClientConnectionString, _syncServerUrl, Console.WriteLine);
@@ -47,8 +47,7 @@
             finally
             {
                 // Delete database for clean up
-                HelperMethods.DeleteDatabase(_connectionString, _firstClientDatabaseName);
-                HelperMethods.DeleteDatabase(_connectionString, _secondClientDatabaseName);
+                HelperMethods.CleanUp(_connectionString, _firstClientDatabaseName, _secondClientDatabaseName, _syncClientDatabaseName);
             }
         }
     }
