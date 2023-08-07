@@ -1,0 +1,30 @@
+DECLARE @TableName NVARCHAR(128), @SchemaName NVARCHAR(128), @ColumnName NVARCHAR(128), @Sql NVARCHAR(MAX);
+                        DECLARE cur CURSOR FOR
+                        SELECT TableName, SchemaName, ColumnName
+                        FROM 
+                        (
+                            SELECT t.name AS TableName, s.name AS SchemaName, c.name AS ColumnName, 
+                                ROW_NUMBER() OVER(PARTITION BY t.object_id ORDER BY c.column_id) AS RowNum
+                            FROM sys.tables t
+                            INNER JOIN sys.schemas s ON t.schema_id = s.schema_id
+                            INNER JOIN sys.columns c ON t.object_id = c.object_id
+                            WHERE c.is_computed = 0 AND c.is_identity = 0 AND c.system_type_id <> 189 -- Exclude computed columns, identity columns, timestamp data type columns
+                        ) AS SubQuery
+                        WHERE SubQuery.RowNum = 1;
+                                                
+                        OPEN cur;                     
+                        
+                        FETCH NEXT FROM cur INTO @TableName, @SchemaName, @ColumnName;                         
+                        
+                        WHILE @@FETCH_STATUS = 0
+                        BEGIN
+                            -- Create a SQL statement for each table and execute it
+                            SET @Sql = N'UPDATE ' + QUOTENAME(@SchemaName) + '.' + QUOTENAME(@TableName) + ' SET ' + QUOTENAME(@ColumnName) + ' = ' + QUOTENAME(@ColumnName);
+                                               
+                            EXEC sp_executesql @Sql;                        
+                        
+                            FETCH NEXT FROM cur INTO @TableName, @SchemaName, @ColumnName;
+                        END                         
+                        
+                        CLOSE cur;
+                        DEALLOCATE cur;

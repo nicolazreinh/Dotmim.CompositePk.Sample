@@ -1,0 +1,43 @@
+USE [master]
+
+CREATE DATABASE @DatabaseName
+
+**GO**
+
+USE [@DatabaseName]
+
+ALTER DATABASE @DatabaseName SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 14 DAYS, AUTO_CLEANUP = ON)
+
+**GO**
+
+CREATE TABLE [dbo].[tbl_purchases](
+	[pk_purchase_id] [bigint] IDENTITY(1,1) NOT NULL,
+	[fk_vendor_id] [int] NULL,
+	[fk_payment_type_id] [int] NOT NULL,
+	[fk_item_id] [bigint] NOT NULL,
+	[purchase_datetime] [datetime] NOT NULL,
+	[fk_currency_id] [int] NOT NULL,
+	[purchase_amount] [decimal](8, 2) NOT NULL,
+	[description] [nvarchar](MAX) NULL,
+	[fk_user_id] [int] NULL,
+	[scanned_item] [varbinary](max) NULL,
+	[mark] [bit] NULL,
+	[invoice_number] [nchar](10) NULL,
+	[parent_id] [varchar](max) NULL,
+ CONSTRAINT [PK_tbl_purchases] PRIMARY KEY CLUSTERED 
+(
+	[pk_purchase_id] ASC,
+    [purchase_datetime] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+
+**GO**
+
+SET IDENTITY_INSERT [dbo].[tbl_purchases] ON 
+
+INSERT [dbo].[tbl_purchases] ([pk_purchase_id], [fk_vendor_id], [fk_payment_type_id], [fk_item_id], [purchase_datetime], [fk_currency_id], [purchase_amount], [description], [fk_user_id], [scanned_item], [mark], [invoice_number], [parent_id]) VALUES (2, 2, 1, 1, CAST(N'2023-03-28T10:52:13.000' AS DateTime), 1, CAST(21.00 AS Decimal(8, 2)), N'asd', 4, NULL, 0, NULL, NULL)
+INSERT [dbo].[tbl_purchases] ([pk_purchase_id], [fk_vendor_id], [fk_payment_type_id], [fk_item_id], [purchase_datetime], [fk_currency_id], [purchase_amount], [description], [fk_user_id], [scanned_item], [mark], [invoice_number], [parent_id]) VALUES (3, 2, 1, 1, CAST(N'2023-03-28T10:52:13.000' AS DateTime), 1, CAST(12.00 AS Decimal(8, 2)), N'asd', 4, NULL, 0, NULL, NULL)
+INSERT [dbo].[tbl_purchases] ([pk_purchase_id], [fk_vendor_id], [fk_payment_type_id], [fk_item_id], [purchase_datetime], [fk_currency_id], [purchase_amount], [description], [fk_user_id], [scanned_item], [mark], [invoice_number], [parent_id]) VALUES (64039, 7, 3, 27, CAST(N'2023-03-28T10:52:13.000' AS DateTime), 1, CAST(112.48 AS Decimal(8, 2)), NULL, 1, NULL, 0, NULL, NULL)
+INSERT [dbo].[tbl_purchases] ([pk_purchase_id], [fk_vendor_id], [fk_payment_type_id], [fk_item_id], [purchase_datetime], [fk_currency_id], [purchase_amount], [description], [fk_user_id], [scanned_item], [mark], [invoice_number], [parent_id]) VALUES (64040, 4, 4, 27, CAST(N'2023-03-28T10:52:13.000' AS DateTime), 1, CAST(346.90 AS Decimal(8, 2)), NULL, 1, NULL, 0, NULL, NULL)
+
+SET IDENTITY_INSERT [dbo].[tbl_purchases] OFF
